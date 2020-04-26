@@ -1,5 +1,6 @@
 import datetime
 import logging
+import json
 from flask import Flask, render_template, request, redirect, url_for
 import os
 from werkzeug.utils import secure_filename
@@ -9,24 +10,28 @@ from _ast import If
 ALLOWED_EXTENSIONS = {'xml'}
 app = Flask(__name__)
 
+bucket_config = {}
+with open("xml_bucket.config.json") as fh:
+    bucket_config = json.load(fh)
 
 @app.route('/upload', methods=['POST', 'GET'])  
 def upload():
-     if request.method == 'POST':
-        
-         uploaded_file = request.files.get('file')
-         if allowed_file(uploaded_file.filename):
-             
-          gcs = storage.Client(project="golden-joy-270306")
-          bucket = gcs.get_bucket("cc-a2-0426")
-          blob = bucket.blob(uploaded_file.filename)
-          blob.upload_from_file(uploaded_file)
-         
-         else:
-          return render_template('index.html',messg=" File EXTENSIONS is not Allowed!!")
+    if request.method == 'POST':
+        uploaded_file = request.files.get('file')
+        if allowed_file(uploaded_file.filename):
+            gcs = None  
+            if bucket_config.get('project', None) is not None:
+                gcs = storage.Client(project=bucket_config['project'])
+            else:
+                gcs = storage.Client()
+            bucket = gcs.get_bucket(bucket_config["bucket_name"])
+            blob = bucket.blob(uploaded_file.filename)
+            blob.upload_from_file(uploaded_file)
+        else:
+            return render_template('index.html',messg=" File EXTENSIONS is not Allowed!!")
    
        
-     return render_template('index.html',messg="UPLOAD SUCCESSFUL")
+    return render_template('index.html',messg="UPLOAD SUCCESSFUL")
 
 
 @app.errorhandler(500)
