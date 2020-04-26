@@ -17,13 +17,14 @@ def upload():
          uploaded_file = request.files.get('file')
          if allowed_file(uploaded_file.filename):
              
-          gcs = storage.Client()
-          bucket = gcs.get_bucket("425_test")
+          gcs = storage.Client(project="golden-joy-270306")
+          bucket = gcs.get_bucket("cc-a2-0426")
           blob = bucket.blob(uploaded_file.filename)
-          blob.upload_from_string(
-          uploaded_file.read(),
-          content_type=uploaded_file.content_type
-          )
+        #   blob.upload_from_string(
+        #   uploaded_file.read(),
+        #   content_type=uploaded_file.content_type
+        #   )
+          blob.upload_from_file(uploaded_file)
          
          else:
           return render_template('index.html',messg=" File EXTENSIONS is not Allowed!!")
