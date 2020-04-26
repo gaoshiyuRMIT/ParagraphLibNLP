@@ -1,4 +1,4 @@
-import datetime
+import time
 import logging
 import json
 from flask import Flask, render_template, request, redirect, url_for
@@ -25,7 +25,7 @@ def upload():
             else:
                 gcs = storage.Client()
             bucket = gcs.get_bucket(bucket_config["bucket_name"])
-            blob = bucket.blob(uploaded_file.filename)
+            blob = bucket.blob("{}.{}".format(uploaded_file.filename, time.time()))
             blob.upload_from_file(uploaded_file)
         else:
             return render_template('index.html',messg=" File EXTENSIONS is not Allowed!!")
