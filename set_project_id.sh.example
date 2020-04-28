@@ -1,0 +1,3 @@
+export GOOGLE_APPLICATION_CREDENTIALS="<absolute_path_of_project_credential_file>"
+export PROJECT=<proejct_id>
+gcloud config set project $PROJECT
