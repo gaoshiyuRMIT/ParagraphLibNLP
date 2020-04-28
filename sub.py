@@ -21,7 +21,7 @@ def sub(project_id, subscription_name):
     def callback(message):
         print(
             "Received message {} of message ID {}\n".format(
-                json.loads(message.data), message.message_id
+                message, message.message_id
             )
         )
         # Acknowledge the message. Unack'ed messages will be redelivered.
