@@ -1,2 +1,2 @@
 ### reference
-- [Pub/Sub notifications for Cloud Storage](https://cloud.google.com/storage/docs/pubsub-notifications)
+- [Quickstart: building a functioning Pub/Sub system](https://cloud.google.com/storage/docs/pubsub-notifications)
