@@ -3,7 +3,7 @@
 - choose a project; set respective params in set_project_id.sh and run it
 - in the project, create a bucket (via console or using [gsutil](https://cloud.google.com/storage/docs/quickstart-gsutil))
 - in the project, create a topic, and a subscription that subscribes to that topic (vis console or using [gcloud](https://cloud.google.com/pubsub/docs/quickstart-cli))
-- create notifications for the bucket `gsutil notification create -t [TOPIC_NAME] -f json gs://[BUCKET_NAME]`
+- create notifications for the bucket `gsutil notification create -t [TOPIC_NAME] -e OBJECT_FINALIZE -f json gs://[BUCKET_NAME]`
 - `gcloud functions deploy FUNCTION_NAME --trigger-topic TOPIC_NAME --runtime python37`
     * allow unauthenticated invocations: N
     * `gcloud functions logs read FUNCTION_NAME`
