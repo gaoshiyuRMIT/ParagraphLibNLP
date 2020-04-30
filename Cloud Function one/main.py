@@ -30,7 +30,7 @@ def hello_gcs_generic(data, context):
     
 
 
-def publish_messages_with_custom_attributes(project_id, topic_name,filename):
+def publish_messages_with_custom_attributes(project_id, topic_name,data1):
     batch_settings = pubsub_v1.types.BatchSettings(
         max_messages=10,  # default 100
         max_bytes=1024,  # default 1 MB
@@ -39,7 +39,7 @@ def publish_messages_with_custom_attributes(project_id, topic_name,filename):
 
     publisher = pubsub_v1.PublisherClient(batch_settings)
     topic_path = publisher.topic_path(project_id, topic_name)
-    data = filename
+    data = data1
     #metadata1=metadata2
     # Data must be a bytestring
     data = data.encode("utf-8")
