@@ -3,7 +3,7 @@
 Before starting:
 
 Check your IAM with appropriate authority for SQL, storage, Compute Engine ,google Task and google NLP.
-Downloading your service account file (.json)  to   /source code for NLP/gce/socket and modify startup-script.sh  -credential_file=<path>
+Downloading your service account file (.json)  to  /gce/socket and modify startup-script.sh  -credential_file=<path>
 
 
 1. Creat queue
