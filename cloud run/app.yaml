@@ -1,0 +1,9 @@
+runtime: python37
+
+# Remember - storing secrets in plaintext is potentially unsafe. Consider using
+# something like https://cloud.google.com/kms/ to help keep secrets secret.
+env_variables:
+  CLOUD_SQL_CONNECTION_NAME: woven-patrol-276308:australia-southeast1:s3734247
+  DB_USER: root
+  DB_PASS: 1234abcd
+  DB_NAME: lib1
