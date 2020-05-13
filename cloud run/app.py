@@ -71,6 +71,8 @@ def hello_world():
 @app.route('/nlp',methods=["POST"])
 def hello_nlp():
     #request = request.form["TODO"]   #Anything you want get from request
+    response_auth_list=[]
+    response_para_list=[]
     auth_dict={}
     para_dict={}
 #For example:
@@ -98,6 +100,7 @@ def hello_nlp():
             auth_dict["age"] = row[2]
             auth_dict["industry"] = row[3]
             auth_dict["astro_sign"]=row[4]
+            response_auth_list.append[auth_dict]
             stmt2 = sqlalchemy.text(
                 "SELECT * FROM Post where author_id='"+str(id)+"';"
                 #"SELECT avg(sentiment_score),avg(sentiment_magnitude) FROM Post where author_id='"+str(id)+"';"
@@ -110,13 +113,14 @@ def hello_nlp():
                 para_dict["bucket_path"] = row2[3]
                 para_dict["sentiment_score"] = row2[4]
                 para_dict["sentiment_magnitude"] = row2[5]
+                response_para_list.append[para_dict]
                 logger.log_text("SUCCESS of inner")
 
 
     return Response(
         status=200,
-        response="two dicts",
-        #TO DO anything to want to send
+        response="two list_dicts",
+        #TO DO anything you want to send
         )
 
 
