@@ -70,6 +70,7 @@ def hello_world():
 
 @app.route('/nlp',methods=["POST"])
 def hello_nlp():
+    #request = request.form["TODO"]   #Anything you want get from request
     auth_dict={}
     para_dict={}
 #For example:
