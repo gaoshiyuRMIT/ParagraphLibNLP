@@ -16,6 +16,8 @@ create table Post (
     author_id int not null,
     publish_date date,
     bucket_path varchar(128),
+    sentiment_score Float,
+    sentiment_magnitude Float,
     constraint pk_Post primary key (id),
     constraint fk_Post_Author foreign key (author_id) references Author(id)
 );

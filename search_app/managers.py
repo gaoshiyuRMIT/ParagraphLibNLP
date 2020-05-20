@@ -1,5 +1,5 @@
 import sqlalchemy as _sa
-from app import db
+from app import db, logger
 
 class PostManager(object):
     TABLE = "Post join Author on Post.author_id = Author.id"
@@ -15,11 +15,17 @@ class PostManager(object):
             sql += " where "
         conds = []
         for k in filt.keys():
-            conds.sppend(f"{k} = :{k}")
+            if k == "post_id":
+                conds.append(f"Post.id = :{k}")
+            elif k == "id":
+                conds.append(f"Post.id = :{k}")
+            else:
+                conds.append(f"{k} = :{k}")
         sql += " and ".join(conds)
+        stmt = _sa.text(sql).bindparams(**filt)
         result = None
         with self.conn as conn:
-            result = conn.execute(sql, **filt)
+            result = conn.execute(stmt)
         return [self.transformRow(r) for r in result]
 
     @staticmethod
