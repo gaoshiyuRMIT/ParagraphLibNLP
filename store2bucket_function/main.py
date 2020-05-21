@@ -7,6 +7,8 @@ import pymysql
 from google.cloud import pubsub_v1
 from google.cloud import logging
 from google.cloud import storage
+from google.cloud import tasks_v2
+from google.protobuf import timestamp_pb2
 
 
 
@@ -14,9 +16,9 @@ log_client = logging.Client()
 logger = log_client.logger("cloudfunctions.googleapis.com%2Fcloud-functions")
 
 
-project, downstream_bucket, downstream_topic = map(os.environ.get, 
-        ["GCP_PROJECT", "downstream_bucket", "downstream_topic"])
-sql_connection, sql_user, sql_database, sql_password = map(os.environ.get, 
+project, downstream_bucket, downstream_topic,queue,location = map(os.environ.get,
+        ["project", "downstream_bucket", "downstream_topic","queue","location"])
+sql_connection, sql_user, sql_database, sql_password = map(os.environ.get,
         ["sql_connection", "sql_user", "sql_database", "sql_password"])
 
 
@@ -37,7 +39,15 @@ def store_paragraph(event, context):
         "publish_date": date
     }
     post_rds_id = store_post_RDS(rds_data)
+    task_data = {
+        "post_rds_id": post_rds_id,
+        "bucket_path": "{}/{}".format(ds_bucket_name, ds_file_path)
+    }
+    mess1= str(task_data)
+    asds=creat_task(mess1)
     logger.log_text("post_rds_id {}".format(post_rds_id))
+
+
     # TODO: publish to cloud tasks
 
 
@@ -65,3 +75,56 @@ def upload_paragraph(content, bucket_name, object_path):
     blob = bucket.blob(object_path)
     blob.upload_from_string(content)
     logger.log_text("successfully uploaded {}/{}".format(bucket_name, object_path))
+
+def creat_task(rds_data):
+    # Create a client.
+    client = tasks_v2.CloudTasksClient()
+    #TODO Task target
+    #For example : url = 'http://35.201.14.192:8080/NLP_to'
+    url = 'TODO'
+    payload = rds_data
+    task_name=None
+    in_seconds=None
+    parent = client.queue_path(project, location, queue)
+
+    # Construct the request body.
+    task = {
+            'http_request': {  # Specify the type of request.
+                'http_method': 'POST',
+
+                'headers': {
+                   'Content-Type': 'application/json'
+                  },
+
+                'url': url  # The full url path that the task will be sent to.
+            }
+    }
+    if payload is not None:
+        # The API expects a payload of type bytes.
+
+        converted_payload = payload.encode()
+
+        # Add the payload to the request.
+        task['http_request']['body'] = converted_payload
+        #task['http_request']['body'] = payload
+
+    if in_seconds is not None:
+        # Convert "seconds from now" into an rfc3339 datetime string.
+        d = datetime.datetime.utcnow() + datetime.timedelta(seconds=in_seconds)
+
+        # Create Timestamp protobuf.
+        timestamp = timestamp_pb2.Timestamp()
+        timestamp.FromDatetime(d)
+
+        # Add the timestamp to the tasks.
+        task['schedule_time'] = timestamp
+
+    if task_name is not None:
+        # Add the name to tasks.
+        task['name'] = task_name
+
+    # Use the client to build and send the task.
+    response = client.create_task(parent, task)
+
+    print('Created task {}'.format(response.name))
+    return response
