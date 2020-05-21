@@ -9,6 +9,17 @@ class PostManager(object):
     def conn(self):
         return db.connect()
 
+    def get_one(self, post_id):
+        sql = f"select {self.FIELDS} from {self.TABLE} where Post.id = :post_id"
+        stmt = _sa.text(sql).bindparams(post_id=post_id)
+        result = None
+        with self.conn as conn:
+            result = conn.execute(stmt)
+        for r in result:
+            # only returns the first
+            return self.transformRow(r)
+        return None
+
     def get_many(self, filt: dict) -> list:
         sql = f"select {self.FIELDS} from {self.TABLE}"
         if len(filt) > 0:
@@ -19,6 +30,8 @@ class PostManager(object):
                 conds.append(f"Post.id = :{k}")
             elif k == "id":
                 conds.append(f"Post.id = :{k}")
+            elif k in ("sentiment_score", "sentiment_magnitude"):
+                conds.append(f"abs({k} - :{k}) <= 0.1")
             else:
                 conds.append(f"{k} = :{k}")
         sql += " and ".join(conds)
